@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+    postgres:
+      container_name: postgres
+      image: postgres:14.1
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=fes6se
+        - POSTGRES_DB=postgres
+      volumes:
+        - ../pgdata:/var/lib/postgresql/data:rw
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+    redis:
+      container_name: redis
+      image: redis:6-alpine
+      ports:
+        - "6379:6379"
+    web-server:
+      container_name: web-server
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        - postgres
+        - redis
+      links:
+        - postgres
+        - redis
+      ports:
+        - "8000:8000"
+      command:
+        - "run-server"
+    worker:
+      container_name: worker
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        - postgres
+        - redis
+      links:
+        - postgres
+        - redis
+      command:
+        - "run-celery-worker"
+    celery-beat-flower:
+      container_name: celery-beat-flower
+      build:
+        context: .
+        dockerfile: Dockerfile
+      depends_on:
+        - postgres
+        - redis
+      links:
+        - postgres
+        - redis
+      ports:
+        - "5555:5555"
+      command:
+        - "run-celery-beat-with-flower"

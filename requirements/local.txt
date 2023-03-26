@@ -1,0 +1,4 @@
+-r ./base.txt
+
+# Code quality
+black==23.1.0  # https://github.com/psf/black
