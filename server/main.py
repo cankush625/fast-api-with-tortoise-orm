@@ -1,11 +1,17 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from server.common.database.session import create_database_connection
 from server.core.urls import api_router
 from server.config.settings import settings
 
 
 def create_app() -> FastAPI:
+    """
+    App factory function that generate FastAPI app instance
+    :return: FastAPI - FastAPI app instance
+    """
+
     current_app = FastAPI(
         title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
     )
@@ -24,3 +30,4 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+create_database_connection(app)

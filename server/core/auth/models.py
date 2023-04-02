@@ -1,12 +1,13 @@
-from sqlalchemy import Column, String, Boolean, DateTime
-
-from server.common.database.base import BaseModel
+from tortoise import fields
 
 
-class User(BaseModel):
-    first_name = Column(String(length=128), nullable=True)
-    last_name = Column(String(length=128), nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    password = Column(String(length=128), nullable=False)
-    is_active = Column(Boolean, default=False)
-    last_login = Column(DateTime(timezone=True), nullable=True)
+from server.common.database.base import BaseAuditModel
+
+
+class User(BaseAuditModel):
+    first_name = fields.CharField(max_length=128, null=True)
+    last_name = fields.CharField(max_length=128, null=False)
+    email = fields.CharField(max_length=128, unique=True, index=True, null=False)
+    password = fields.CharField(max_length=128, null=False)
+    is_active = fields.BooleanField(default=False)
+    last_login = fields.DatetimeField(timezone=True, null=True)

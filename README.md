@@ -15,7 +15,10 @@ Database:
 - Postgresql
 
 ORM:
-- SQLAlchemy
+- Tortoise
+
+Migrations:
+- Aerich
 
 Cache:
 - Redis

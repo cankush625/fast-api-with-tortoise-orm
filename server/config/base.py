@@ -1,24 +1,60 @@
+import os
+import environs
 import secrets
 from typing import Optional
 
-from dotenv import load_dotenv
-from pydantic import BaseSettings, HttpUrl, PostgresDsn, EmailStr
+from pydantic import BaseSettings, HttpUrl, EmailStr
 
-load_dotenv()  # take environment variables from .env.
+ROOT_DIR = environs.Path(__file__).parent.parent  # (config/base.py - 2 = server/)
+
+ENV = environs.Env()
+# Make a path to .env file in root directory
+ENV_PATH = str(ROOT_DIR._make_child([".env"]))
+# If .env file present then only load env it
+if os.path.exists(ENV_PATH):
+    ENV.read_env(ENV_PATH)
+
+DATABASE_HOST: str = ENV("DATABASE_HOST")
+DATABASE_USER: str = ENV("DATABASE_USER")
+DATABASE_PASS: str = ENV("DATABASE_PASS")
+DATABASE_NAME: str = ENV("DATABASE_NAME")
+DATABASE_PORT: str = ENV("DATABASE_PORT")
+
+# Tortoise config is written outside Settings class because
+# when performing aerich init for database migrations, it cannot
+# access Tortoise config from settings class, but it requires to have
+# it defined at global level in file
+TORTOISE_CONFIG = {
+    "connections": {
+        "default": {
+            "engine": "tortoise.backends.psycopg",
+            "credentials": {
+                "host": DATABASE_HOST,
+                "port": DATABASE_PORT,
+                "user": DATABASE_USER,
+                "password": DATABASE_PASS,
+                "database": DATABASE_NAME,
+            }
+        },
+    },
+    "apps": {
+        "models": {
+            "models": ["aerich.models", "server.core.auth.models"],
+            "default_connection": "default",
+        }
+    },
+    "routers": [],
+    "use_tz": True,
+    "timezone": "UTC"
+}
 
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
-    # Database
-    DATABASE_DRIVER = "postgresql+psycopg2"
-    DATABASE_HOST: str
-    DATABASE_USER: str
-    DATABASE_PASS: str
-    DATABASE_NAME: str
-    DATABASE_PORT: int
-    DATABASE_URI: Optional[PostgresDsn] = None
+    # TORTOISE config should be used through settings
+    TORTOISE_CONFIG = TORTOISE_CONFIG
 
     # Celery
     @staticmethod
@@ -55,3 +91,4 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
         env_file = ".env"
+        env_file_encoding = "utf-8"

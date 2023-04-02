@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import AnyHttpUrl
 
-from server.config.base import Settings
+from server.config.base import *  # noqa
 
 
 class ProductionSettings(Settings):

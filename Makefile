@@ -12,10 +12,10 @@ dev-setup-down:
 	docker-compose down
 
 run-makemigrations:
-	alembic -c server/migrations/alembic.ini revision --autogenerate
+	aerich migrate
 
 run-migrations:
-	alembic -c server/migrations/alembic.ini upgrade head
+	 aerich upgrade
 
 run-server:
 	python3 server/main.py
