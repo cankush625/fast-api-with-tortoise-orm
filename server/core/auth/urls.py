@@ -10,7 +10,5 @@ router = APIRouter()
 
 
 @router.post("/login/access-token", response_model=schemas.Token)
-def login_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends()
-) -> Any:
+def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     pass

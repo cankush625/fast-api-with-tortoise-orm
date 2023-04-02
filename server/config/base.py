@@ -34,7 +34,7 @@ TORTOISE_CONFIG = {
                 "user": DATABASE_USER,
                 "password": DATABASE_PASS,
                 "database": DATABASE_NAME,
-            }
+            },
         },
     },
     "apps": {
@@ -45,7 +45,7 @@ TORTOISE_CONFIG = {
     },
     "routers": [],
     "use_tz": True,
-    "timezone": "UTC"
+    "timezone": "UTC",
 }
 
 
